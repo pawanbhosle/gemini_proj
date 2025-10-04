@@ -69,40 +69,52 @@ def create_order():
     ---
     tags:
       - Orders
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - customer_id
-              - order_date
-              - items
-            properties:
-              customer_id:
-                type: integer
-                example: 1
-              order_date:
-                type: string
-                example: "2025-10-05"
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        description: JSON payload to create an order
+        schema:
+          type: object
+          required:
+            - customer_id
+            - order_date
+            - items
+          properties:
+            customer_id:
+              type: integer
+              example: 1
+            order_date:
+              type: string
+              example: "2025-10-05"
+            items:
+              type: array
               items:
-                type: array
-                items:
-                  type: object
-                  required:
-                    - product_id
-                    - quantity
-                  properties:
-                    product_id:
-                      type: integer
-                      example: 1
-                    quantity:
-                      type: integer
-                      example: 2
+                type: object
+                required:
+                  - product_id
+                  - quantity
+                properties:
+                  product_id:
+                    type: integer
+                    example: 1
+                  quantity:
+                    type: integer
+                    example: 2
     responses:
       201:
         description: Order created successfully
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Order created"
+            order_id:
+              type: integer
+              example: 10
       400:
         description: Invalid input or stock issue
     """
@@ -189,21 +201,34 @@ def genai_query():
     ---
     tags:
       - GenAI
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - query
-            properties:
-              query:
-                type: string
-                example: "Find products that are out of stock"
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        description: Natural language query to convert into SQL
+        schema:
+          type: object
+          required:
+            - query
+          properties:
+            query:
+              type: string
+              example: "Find products that are out of stock"
     responses:
       200:
         description: SQL query executed successfully
+        schema:
+          type: object
+          properties:
+            sql:
+              type: string
+              example: "SELECT * FROM products WHERE stock_quantity = 0;"
+            result:
+              type: array
+              items:
+                type: object
       400:
         description: Invalid query
     """
